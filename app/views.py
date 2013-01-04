@@ -18,27 +18,13 @@ oauth_consumer_secret = 'kfteru58n3'
 etsy_env= EtsyEnvProduction()
 
 
-def Get_Listing(listing_id):
+def get_listing(listing_id):
 
     etsy_api = Etsy(api_key=Etsy_API_ID, etsy_env=etsy_env)
     return etsy_api.getListing(listing_id=listing_id)
 
-'''
-for x in range (len(data)):
-    listing = data[x]
-    print "This item: " + data[x]['title'] + "has the following tags: \n" + str(data[x]['tags'])
-    replace_tag = raw_input("Which tag would you like to modify? ---> ")
-    tags = data[x]['tags']
-    if replace_tag in tags:
-         replacement_value = raw_input("What are you going to replace it with? ---> ")
-         if replacement_value != '':
-            loc = tags.index(replace_tag)
-            tags[loc] = replacement_value
-            list_id = data[x]['listing_id']
-            pdb.set_trace()
-            response = etsy_api.updateListing(listing_id=list_id, tags=tags)
-'''
-def Search_Etsy_Tweets():
+
+def search_etsy_tweets():
     """
     Print recent tweets containing `searchTerm`.
     
@@ -49,29 +35,61 @@ def Search_Etsy_Tweets():
     api = twitter.Api()
     searchTerm = "etsy"
     tweets = api.GetSearch(searchTerm, include_entities = 1, result_type = "recent", per_page = 5)
-    listing_data_list = []
+    results = []
     for tweet in tweets:
-        tweet_urls = Get_Urls(tweet)
+        tweet_urls = get_urls(tweet)
         for item in tweet_urls:
-            #util.safe_print(tweet.GetText())
             expanded_url = get_expanded_url(item)
             if expanded_url.find("http://www.etsy.com/listing/") != -1:
                 orig_pos = expanded_url.find("http://www.etsy.com/listing/") + 28
-                listing_id = expanded_url[orig_pos:orig_pos + 9]
-                listing_data = Get_Listing(listing_id)
-                #util.safe_print(listing_data)
-                print listing_data
-                
-    return "processed"
+                end_pos = expanded_url.find("/",orig_pos)
+                listing_id = expanded_url[orig_pos:end_pos]
+                listing_data = get_listing(listing_id)
+                formatted_listing = format_listing_data(listing_data[0])
+                results.append(formatted_listing)
+    
+    #return jsonify(results)
+    return results
 
+def get_listing(listing_id):
+    etsy_api = Etsy(api_key=Etsy_API_ID, etsy_env=etsy_env)
+    return etsy_api.getListing(listing_id=listing_id)
 
-def Get_Urls(tweet):
+def get_urls(tweet):
     tweet_urls = []
     for url in tweet.urls:
         tweet_urls.append(url.url)
     return tweet_urls
 
+def format_listing_data(listing_data):
+    listing_title = listing_data['title']
+    listing_views = listing_data['views']
+    listing_favorers = listing_data['num_favorers']
+    tweet_location = ''
+    tweet_retweets = ''
+    listing_score = 10
 
+    '''
+     also need to use
+
+     getImage_Listing api call
+     need to pass listing_id and listing_image_id to get main image.
+     
+     '''
+    item_data = {'listing_title': listing_title,
+            'views': listing_views,
+            'favorers': listing_favorers,
+            'tweet_location' : tweet_location,
+            'retweets' : tweet_retweets,
+            'score': listing_score
+            }
+
+    formatted_listing = {'listing_id': listing_data['listing_id'],
+                          'listing_data': item_data }
+    
+    
+    return formatted_listing
+    
 class HeadRequest(urllib2.Request):
     def get_method(self): return "HEAD"
      
@@ -84,5 +102,6 @@ def get_expanded_url(url):
 
 
 @app.route('/')
-def hello():
-    return Search_Etsy_Tweets()
+def display_data():
+    data = search_etsy_tweets()
+    return render_template('index.html', data = data)

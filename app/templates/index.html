@@ -1,0 +1,28 @@
+<html>
+ <head>
+   <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+ </head>
+ <body>
+   <script type="text/javascript">
+//de = [{'count': 728, 'name': 'sample0'}, {'count': 824, 'name': 'sample1'}, {'count': 963, 'name': 'sample2'}, {'count': 927, 'name': 'sample3'}, {'count': 221, 'name': 'sample4'}, {'count': 574, 'name': 'sample5'}, {'count': 733, 'name': 'sample6'}, {'count': 257, 'name': 'sample7'}, {'count': 879, 'name': 'sample8'}, {'count': 620, 'name': 'sample9'}];
+
+de = {% autoescape false %} {{data}} {% endautoescape %}
+
+d3.select("body").append("ul").selectAll("li")
+    .data(de) // top level data-join
+  .enter().append("li")
+    .each(function() {
+      var li = d3.select(this);
+
+      li.append("p")
+          .text(function(d) { return d.listing_id; });
+
+      li.append("ul").selectAll("li")
+          .data(function(d) { return d.listing_data; }) // second level data-join
+        .enter().append("li")
+          .text(function(d) { return d.listing_title + ": " + d.views; });
+    });
+   </script>
+   {{ data.listing_id }}
+ </body>
+</html>
