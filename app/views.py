@@ -1,3 +1,7 @@
+from flask import *
+from httplib import *
+from app import app
+import os
 import twitter
 import util
 import urllib2
@@ -37,11 +41,6 @@ for x in range (len(data)):
 def Search_Etsy_Tweets():
     """
     Print recent tweets containing `searchTerm`.
-
-    To test this function, at the command line run:
-        python twitter_api.py --search=<search term>
-    For example,
-        python twitter_api.py --search=python
     
     we'll search for tweets containing 'etsy' and filter by links in tweets, we will
     only care about the ones containing listing links.
@@ -50,6 +49,7 @@ def Search_Etsy_Tweets():
     api = twitter.Api()
     searchTerm = "etsy"
     tweets = api.GetSearch(searchTerm, include_entities = 1, result_type = "recent", per_page = 5)
+    listing_data_list = []
     for tweet in tweets:
         tweet_urls = Get_Urls(tweet)
         for item in tweet_urls:
@@ -61,6 +61,8 @@ def Search_Etsy_Tweets():
                 listing_data = Get_Listing(listing_id)
                 #util.safe_print(listing_data)
                 print listing_data
+                
+    return "processed"
 
 
 def Get_Urls(tweet):
@@ -80,4 +82,7 @@ def get_expanded_url(url):
     except:
         return "empty"
 
-Search_Etsy_Tweets()
+
+@app.route('/')
+def hello():
+    return Search_Etsy_Tweets()
