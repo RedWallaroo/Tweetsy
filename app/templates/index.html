@@ -1,18 +1,134 @@
 <html>
  <head>
-   <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
-   <script src="../static/d3_logic.js"></script>
-   <script src="../static/gistfile1.js"></script>
+   <script src="../static/d3.v3.min.js"></script>
+   <script src="../static/underscore-min.js"></script>
+   <script src="../static/backbone-min.js"></script>
   </head>
  <body>
-  <!--<div id="container1" style="height: 500px; width: 960px"></div>-->
+  <div id="container1" style="height: 500px; width: 960px"></div>
         <!-- Datamaps Source -->
-        <!--<script src="http://datamaps.github.com/scripts/datamaps-all.js"></script>
-        <script src="../static/maps.js"></script>-->
+        <script src="../static/datamaps-all.js"></script>
+        <!--<script src="../static/maps.js"></script>-->
    <script type="text/javascript">
 //de = [{'count': 728, 'name': 'sample0'}, {'count': 824, 'name': 'sample1'}, {'count': 963, 'name': 'sample2'}, {'count': 927, 'name': 'sample3'}, {'count': 221, 'name': 'sample4'}, {'count': 574, 'name': 'sample5'}, {'count': 733, 'name': 'sample6'}, {'count': 257, 'name': 'sample7'}, {'count': 879, 'name': 'sample8'}, {'count': 620, 'name': 'sample9'}];
 
 //de = {% autoescape false %} {{data}} {% endautoescape %}
+/*var bombs = new Backbone.Collection([
+  {
+    name: 'Gerboise Bleue',
+    radius: 0,
+    yeild: 70,
+    country: 'France',
+    significance: 'First fission weapon test by France',
+    date: '1960-02-13',
+    fillKey: 'FRA',
+    latitude: -0.325,
+    longitude: 26.1840
+  }, {
+    name: 'Canopus',
+    radius: 0,
+    yeild: 2600,
+    country: 'France',
+    significance: 'First "staged" thermonuclear test by France',
+    fillKey: 'FRA',
+    date: '1968-08-24',
+    latitude: -22.15,
+    longitude: -138.45
+  }, {
+    name: 'Tsar Bomba',
+    radius: 0,
+    yeild: 50000,
+    country: 'USSR',
+    fillKey: 'RUS',
+    significance: 'Largest thermonuclear weapon ever tested—scaled down from its initial 100 Mt design by 50%',
+    date: '1961-10-31',
+    latitude: 73.482,
+    longitude: 54.5854
+  }
+]); */
+
+//var bombs = [{"listing_id": 108867555, "listing_data": [{"tweet_location": 3, "listing_title": "Wire Crochet Cuff Cobweb Bracelet copper, seedbeads and crystals", "views": 123, "favorers": 30, "score": 100, "retweets": 1}]}, {"listing_id": 117770322, "listing_data": [{"tweet_location": 3, "listing_title": "Set of Mustache bobby pins and FREE SHIPPING", "views": 43, "favorers": 0, "score": 100, "retweets": 1}]}]
+
+//var bombs = [{"listing_id": 108867555, "listing_data": [{"name": 'Tsar Bomb', "radius": 0, "yeild": 50000, "country": 'USSR', "fillKey": 'RUS', "significance": 'largest thremonuclear', "date": '1961-10-31', "latitude": 73.482, "longitude": 54.5854}]}, {"listing_id": 117770322, "listing_data": [{"name": 'Canopus', "radius": 0, "yeild": 2600, "country": 'France', "fillKey": 'FRA', "significance": 'largest thremonuclear', "date": '1968-08-24', "latitude": -22.15, "longitude": -138.45}]}]
+
+var bombs2 = [{"name": 'Tsar Bomb', "radius": 0, "yeild": 50000, "country": 'USSR', "fillKey": 'RUS', "significance": 'largest thremonuclear', "date": '1961-10-31', "latitude": 73.482, "longitude": 54.5854}, {"name": 'Canopus', "radius": 0, "yeild": 2600, "country": 'France', "fillKey": 'FRA', "significance": 'largest thremonuclear', "date": '1968-08-24', "latitude": -22.15, "longitude": -138.45}];
+
+//var bombs2 = JSON.parse([{"name": 'Tsar Bomb', "radius": 0, "yeild": 50000, "country": 'USSR', "fillKey": 'RUS', "significance": 'largest thremonuclear', "date": '1961-10-31', "latitude": 73.482, "longitude": 54.5854}, {"name": 'Canopus', "radius": 0, "yeild": 2600, "country": 'France', "fillKey": 'FRA', "significance": 'largest thremonuclear', "date": '1968-08-24', "latitude": -22.15, "longitude": -138.45}])
+
+
+
+var Listing_Object = Backbone.Model.extend({
+  defaults: {
+    name: null,
+    radius: null,
+    yeild: null,
+    country: null,
+    fillKey: null,
+    significance: null,
+    date: null,
+    latitude: null,
+    longitude: null
+  }
+});
+
+var Listing_Collection = Backbone.Collection.extend({
+  model: Listing_Object,
+  initialize: function (models,options){}
+});
+
+var bombs = new Listing_Collection(bombs2, { view: this })
+
+//prep the data
+    var yields = bombs.pluck('yeild');
+    var min = d3.min( yields );
+    var max = d3.max( yields );
+
+    var scale = d3.scale.pow()
+        .domain([min, max])
+        .range([10, 45]);
+
+    bombs.each(function(val, idx) {
+        bombs.at(idx).set('radius', scale(val.get('yeild')));
+    });
+
+   $("#container1").datamap({
+        scope: 'world',
+        bubbles: bombs.toJSON(),
+        bubble_config: {
+            popupTemplate: _.template([
+                '<div class="hoverinfo"><strong><%= data.name %></strong>',
+                '<br/>Payload: <%= data.yeild %> kilotons',
+                '<br/>Country: <%= data.country %>',
+                '<br/>Date: <%= data.date %>',
+                '</div>'].join(''))
+        },
+        geography_config: {
+            popupOnHover: false,
+            highlightOnHover: false
+        },
+        fills: {
+            'USA': '#1f77b4',
+            'RUS': '#9467bd',
+            'PRK': '#ff7f0e',
+            'PRC': '#2ca02c',
+            'IND': '#e377c2',
+            'GBR': '#8c564b',
+            'FRA': '#d62728',
+            'PAK': '#7f7f7f',
+            defaultFill: '#FFFFFF'
+        },
+        data: {
+            'RUS': {fillKey: 'RUS'},
+            'PRK': {fillKey: 'PRK'},
+            'CHN': {fillKey: 'PRC'},
+            'IND': {fillKey: 'IND'},
+            'GBR': {fillKey: 'GBR'},
+            'FRA': {fillKey: 'FRA'},
+            'PAK': {fillKey: 'PAK'},
+            'USA': {fillKey: 'USA'}
+        }
+    });
+
 de = {{ data|tojson|safe }}
 
 d3.select("body").append("ul").selectAll("li")
