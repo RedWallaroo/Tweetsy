@@ -22,7 +22,7 @@ gn = geocoders.GeoNames()
 def search_etsy_tweets():
     api = twitter.Api()
     searchTerm = "etsy"
-    tweets = api.GetSearch(searchTerm, include_entities=1, result_type="popular", per_page=100, geocode=("39.232253","-2.460937","24000mi"))
+    tweets = api.GetSearch(searchTerm, include_entities=1, result_type="recent", per_page=20, geocode=("39.232253","-2.460937","24000mi"))
     results = []
     for tweet in tweets:
         tweet_urls = get_urls(tweet)

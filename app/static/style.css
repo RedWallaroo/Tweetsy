@@ -1,0 +1,67 @@
+
+   .body {
+    background-image: url("../static/Texture6a.jpg"); 
+    background-repeat: repeat;
+  }
+   div.main_container{
+    border-width:1px;
+    border-style:solid;
+    border-color:#DEDEDE;
+    background-color: #ffffff;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+   }
+   div.canvas{
+    height: 500px;
+    width: 960px;
+   }
+   div.main_logo{
+    width: 30%;
+    margin-left: auto;
+    margin-right: auto;
+    height: 160px;
+   }
+
+   #content {
+    width:1028px;
+    margin:5px auto 0 auto;
+   }
+
+   #sub-content {
+    margin:1px;
+    padding:1px;
+    overflow:hidden;
+   }
+
+   #column1 {
+    width:320px;
+    height: 300px;
+    background:#BEE740;
+    margin:0 7px 0 0;
+    padding:8px;
+    float:left;
+    font-family: Arial;
+    font-size: 14px;
+   }
+
+   #column2 {
+    width:320px;
+    height: 300px;
+    background:#BEE740; 
+    margin:0 7px 0 0;
+    padding:8px;
+    float:left;
+    font-family: Arial;
+    font-size: 14px;
+  }
+   #column3 {
+    width:320px;
+    height: 300px;
+    background:#BEE740;
+    margin:0;
+    padding:8px;
+    float:left;
+    font-family: Arial;
+    font-size: 14px;
+}
