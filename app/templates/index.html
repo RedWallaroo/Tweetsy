@@ -3,10 +3,83 @@
    <script src="../static/d3.v3.min.js"></script>
    <script src="../static/underscore-min.js"></script>
    <script src="../static/backbone-min.js"></script>
+   <style type="text/css">
+   .body {
+    background-image: url("../static/Texture6a.jpg"); 
+    background-repeat: repeat;
+  }
+   div.main_container{
+    border-width:1px;
+    border-style:solid;
+    border-color:#DEDEDE;
+    background-color: #ffffff;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+   }
+   div.canvas{
+    height: 500px;
+    width: 960px;
+   }
+   div.main_logo{
+    width: 30%;
+    margin-left: auto;
+    margin-right: auto;
+    height: 180px;
+   }
+
+   #content {
+    width:1028px;
+    margin:5px auto 0 auto;
+   }
+
+   #sub-content {
+    margin:1px;
+    padding:1px;
+    overflow:hidden;
+   }
+
+   #column1 {
+    width:320px;
+    height: 300px;
+    background:#BEE740;
+    margin:0 7px 0 0;
+    padding:8px;
+    float:left;
+    font-family: Arial;
+    font-size: 14px;
+   }
+
+   #column2 {
+    width:320px;
+    height: 300px;
+    background:#BEE740; 
+    margin:0 7px 0 0;
+    padding:8px;
+    float:left;
+    font-family: Arial;
+    font-size: 14px;
+  }
+   #column3 {
+    width:320px;
+    height: 300px;
+    background:#BEE740;
+    margin:0;
+    padding:8px;
+    float:left;
+    font-family: Arial;
+    font-size: 14px;
+}
+
+
+   </style> 
   </head>
- <body>
-  <img src="../static/tweetsy_logo_v3.png">
-  <div id="container1" style="height: 500px; width: 960px"></div>
+ <body class = "body">
+  <div id ="main_logo" class = "main_logo">
+    <img class = "logo" src="../static/tweetsy_logo_v7.png">
+  </div>
+  <div id="maincontainer" class = "main_container">
+  <div id="container1" class = "canvas"></div></div>
         <!-- Datamaps Source -->
         <script src="../static/datamaps-all.js"></script>
         <!--<script src="../static/maps.js"></script>-->
@@ -24,8 +97,11 @@ var Listing_Object = Backbone.Model.extend({
     favorers: null,
     latitude: null,
     longitude: null,
-    yields: 2000,
-    radius: 0
+    yeild: 0,
+    radius: 5.0,
+    fillKey: 'USA',
+    country: null,
+    date: null
   }
 });
 
@@ -35,6 +111,9 @@ var Listing_Collection = Backbone.Collection.extend({
 });
 
 var Listing_Data = new Listing_Collection(json_data, { view: this })
+console.log(Listing_Data.length)
+
+var jsonListing_data = [{"name": 'Tsar Bomb', "radius": 0, "yeild": 50000, "country": 'USSR', "fillKey": 'RUS', "significance": 'largest thremonuclear', "date": '1961-10-31', "latitude": 73.482, "longitude": 54.5854}, {"name": 'Canopus', "radius": 0, "yeild": 2600, "country": 'France', "fillKey": 'FRA', "significance": 'largest thremonuclear', "date": '1968-08-24', "latitude": -22.15, "longitude": -138.45}];
 
 //prep the data
     var yields = Listing_Data.pluck('yeild');
@@ -73,40 +152,68 @@ var Listing_Data = new Listing_Collection(json_data, { view: this })
             'GBR': '#8c564b',
             'FRA': '#d62728',
             'PAK': '#7f7f7f',
-            defaultFill: '#FFFFFF'
+            'DEF': '#969496',
+            defaultFill: '#969496'
         },
         data: {
-            'RUS': {fillKey: 'RUS'},
-            'PRK': {fillKey: 'PRK'},
-            'CHN': {fillKey: 'PRC'},
-            'IND': {fillKey: 'IND'},
-            'GBR': {fillKey: 'GBR'},
-            'FRA': {fillKey: 'FRA'},
-            'PAK': {fillKey: 'PAK'},
-            'USA': {fillKey: 'USA'}
+            'RUS': {fillKey: 'DEF'},
+            'PRK': {fillKey: 'DEF'},
+            'CHN': {fillKey: 'DEF'},
+            'IND': {fillKey: 'DEF'},
+            'GBR': {fillKey: 'DEF'},
+            'FRA': {fillKey: 'DEF'},
+            'PAK': {fillKey: 'DEF'},
+            'USA': {fillKey: 'DEF'}
         }
-    });
-
-de = {{ data|tojson|safe }}
-
-d3.select("body").append("ul").selectAll("li")
-  .data(de) // top level data-join
-  .enter().append("li")
-    .each(function() {
-       var li = d3.select(this);
-       li.append("p")
-         .text(function(d) { return d.listing_id; });
-       li.append("ul").selectAll("li")
-         .data(function(d) { return d.listing_data; }) // second level data-join
-           .enter().append("li")
-              .text(function(d) { return "Title : " + d.listing_title; })
-           .append("li")
-              .text(function(d) { return "Views : " + d.views; })
-           .append("li")
-              .text(function(d) { return "Favorers : " + d.favorers; });
     });
 
    </script>
    {{ data.listing_id }}
+<br style="clear:both" />
+   <div id="content">
+                 <div id="sub-content">
+                 <div id="column1">
+                 <h2>About Tweetsy</h2>
+                   <p>In a few words, Tweetsy uses the Twitter API to
+                    grab a sample of tweets matching the search term 'Etsy'.
+                    The search also includes a parameter to only search
+                    for tweets with geolocation data.</p>
+
+                    <p>It then filters the sampled data and keeps only tweets 
+                    that contain a url linking to an Etsy listing
+                    (or product). With this information, it places a call
+                    to the Etsy API and grabs the listing's information.</p> 
+                    
+                    <p>Once all the information has been gathered, it uses
+                      the tweet's geolocation data and D3.js to locate the 
+                      tweet's source and listing's data on the map above.</p>
+                 </div>
+                 <div id="column2">
+                 <h2>Libraries</h2>
+                   <p>Tweetsy uses the following libraries:</p>
+                   <li><a href="https://github.com/mbostock/d3"> D3.js </li>
+                   <li><a href="https://code.google.com/p/geopy/"> geopy </li>
+                   <li><a href="https://code.google.com/p/python-twitter/"> python-twitter </li>
+                   <li><a href="https://github.com/mcfunley/etsy-python"> etsy-python </li>
+                   <li><a href="http://datamaps.github.com/"> Datamaps </li>
+
+                 </div>
+                  <div id="column3">
+                 <h2>Source Code</h2>
+                   <p>The source code for Tweetsy can
+                   be found on <a href="https://github.com/RedWallaroo/Tweetsy">Github</a></p>
+
+                  <p>If you have any questions, comments, or
+                    suggestions for Tweetsy, please contact me
+                    via Twitter: @Radwallaroo
+
+
+
+                    </p>
+                 </div>
+               </div>
+            </div>
+
+<br style="clear:both" />
  </body>
 </html>

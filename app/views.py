@@ -22,7 +22,7 @@ gn = geocoders.GeoNames()
 def search_etsy_tweets():
     api = twitter.Api()
     searchTerm = "etsy"
-    tweets = api.GetSearch(searchTerm, include_entities=1, result_type="recent", per_page=10, geocode=("34.0522342","-118.4911912","4000mi"))
+    tweets = api.GetSearch(searchTerm, include_entities=1, result_type="popular", per_page=100, geocode=("39.232253","-2.460937","24000mi"))
     results = []
     for tweet in tweets:
         tweet_urls = get_urls(tweet)
@@ -47,12 +47,21 @@ def get_urls(tweet):
     return tweet_urls
 
 def get_location(tweet):
-    pdb.set_trace()
     if tweet.geo != None:
         tweet_coordinates = tweet.get.coordinates
     elif tweet.location != None:
-        tweet_geocode = gn.geocode(tweet.location, exactly_one=False)
-        tweet_coordinates = tweet_geocode[0][1]
+        if tweet.location.find("iPhone") != -1:
+            tweet_geocode = tweet.location.replace("iPhone: ", "")  
+        else:
+            try:
+                tweet_geocode = gn.geocode(tweet.location, exactly_one=False)
+            except:
+                tweet_geocode = None
+
+            if tweet_geocode == None: 
+                tweet_coordinates = ("34.0522342","-118.4911912")
+            else:
+                tweet_coordinates = tweet_geocode[0][1]
     else:
         tweet_coordinates = ("34.0522342","-118.4911912")
 
@@ -66,7 +75,7 @@ def get_expanded_url(url):
         return 'empty'
 
 def format_json_data(listing_data, tweet_location):
-    listing_title = listing_data['title']
+    listing_title = listing_data['title'][:50] + "..."
     listing_views = listing_data['views']
     listing_favorers = listing_data['num_favorers']
     listing_id = listing_data['listing_id']
