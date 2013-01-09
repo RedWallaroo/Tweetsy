@@ -1,6 +1,7 @@
 Flask==0.9
 Jinja2==2.6
 Werkzeug==0.8.3
+etsy==0.3.1
 geopy==0.94.2
 httplib2==0.7.7
 oauth2==1.5.211
