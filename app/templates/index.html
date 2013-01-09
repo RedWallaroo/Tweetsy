@@ -5,69 +5,27 @@
    <script src="../static/backbone-min.js"></script>
   </head>
  <body>
+  <img src="../static/tweetsy_logo_v3.png">
   <div id="container1" style="height: 500px; width: 960px"></div>
         <!-- Datamaps Source -->
         <script src="../static/datamaps-all.js"></script>
         <!--<script src="../static/maps.js"></script>-->
    <script type="text/javascript">
-//de = [{'count': 728, 'name': 'sample0'}, {'count': 824, 'name': 'sample1'}, {'count': 963, 'name': 'sample2'}, {'count': 927, 'name': 'sample3'}, {'count': 221, 'name': 'sample4'}, {'count': 574, 'name': 'sample5'}, {'count': 733, 'name': 'sample6'}, {'count': 257, 'name': 'sample7'}, {'count': 879, 'name': 'sample8'}, {'count': 620, 'name': 'sample9'}];
 
-//de = {% autoescape false %} {{data}} {% endautoescape %}
-/*var bombs = new Backbone.Collection([
-  {
-    name: 'Gerboise Bleue',
-    radius: 0,
-    yeild: 70,
-    country: 'France',
-    significance: 'First fission weapon test by France',
-    date: '1960-02-13',
-    fillKey: 'FRA',
-    latitude: -0.325,
-    longitude: 26.1840
-  }, {
-    name: 'Canopus',
-    radius: 0,
-    yeild: 2600,
-    country: 'France',
-    significance: 'First "staged" thermonuclear test by France',
-    fillKey: 'FRA',
-    date: '1968-08-24',
-    latitude: -22.15,
-    longitude: -138.45
-  }, {
-    name: 'Tsar Bomba',
-    radius: 0,
-    yeild: 50000,
-    country: 'USSR',
-    fillKey: 'RUS',
-    significance: 'Largest thermonuclear weapon ever tested—scaled down from its initial 100 Mt design by 50%',
-    date: '1961-10-31',
-    latitude: 73.482,
-    longitude: 54.5854
-  }
-]); */
+   json_data = {{ data|tojson|safe }}
 
-//var bombs = [{"listing_id": 108867555, "listing_data": [{"tweet_location": 3, "listing_title": "Wire Crochet Cuff Cobweb Bracelet copper, seedbeads and crystals", "views": 123, "favorers": 30, "score": 100, "retweets": 1}]}, {"listing_id": 117770322, "listing_data": [{"tweet_location": 3, "listing_title": "Set of Mustache bobby pins and FREE SHIPPING", "views": 43, "favorers": 0, "score": 100, "retweets": 1}]}]
-
-//var bombs = [{"listing_id": 108867555, "listing_data": [{"name": 'Tsar Bomb', "radius": 0, "yeild": 50000, "country": 'USSR', "fillKey": 'RUS', "significance": 'largest thremonuclear', "date": '1961-10-31', "latitude": 73.482, "longitude": 54.5854}]}, {"listing_id": 117770322, "listing_data": [{"name": 'Canopus', "radius": 0, "yeild": 2600, "country": 'France', "fillKey": 'FRA', "significance": 'largest thremonuclear', "date": '1968-08-24', "latitude": -22.15, "longitude": -138.45}]}]
-
-var bombs2 = [{"name": 'Tsar Bomb', "radius": 0, "yeild": 50000, "country": 'USSR', "fillKey": 'RUS', "significance": 'largest thremonuclear', "date": '1961-10-31', "latitude": 73.482, "longitude": 54.5854}, {"name": 'Canopus', "radius": 0, "yeild": 2600, "country": 'France', "fillKey": 'FRA', "significance": 'largest thremonuclear', "date": '1968-08-24', "latitude": -22.15, "longitude": -138.45}];
-
-//var bombs2 = JSON.parse([{"name": 'Tsar Bomb', "radius": 0, "yeild": 50000, "country": 'USSR', "fillKey": 'RUS', "significance": 'largest thremonuclear', "date": '1961-10-31', "latitude": 73.482, "longitude": 54.5854}, {"name": 'Canopus', "radius": 0, "yeild": 2600, "country": 'France', "fillKey": 'FRA', "significance": 'largest thremonuclear', "date": '1968-08-24', "latitude": -22.15, "longitude": -138.45}])
-
-
+//var bombs2 = [{"name": 'Tsar Bomb', "radius": 0, "yeild": 50000, "country": 'USSR', "fillKey": 'RUS', "significance": 'largest thremonuclear', "date": '1961-10-31', "latitude": 73.482, "longitude": 54.5854}, {"name": 'Canopus', "radius": 0, "yeild": 2600, "country": 'France', "fillKey": 'FRA', "significance": 'largest thremonuclear', "date": '1968-08-24', "latitude": -22.15, "longitude": -138.45}];
 
 var Listing_Object = Backbone.Model.extend({
   defaults: {
-    name: null,
-    radius: null,
-    yeild: null,
-    country: null,
-    fillKey: null,
-    significance: null,
-    date: null,
+    id: null,
+    title: null,
+    views: null,
+    favorers: null,
     latitude: null,
-    longitude: null
+    longitude: null,
+    yields: 2000,
+    radius: 0
   }
 });
 
@@ -76,10 +34,10 @@ var Listing_Collection = Backbone.Collection.extend({
   initialize: function (models,options){}
 });
 
-var bombs = new Listing_Collection(bombs2, { view: this })
+var Listing_Data = new Listing_Collection(json_data, { view: this })
 
 //prep the data
-    var yields = bombs.pluck('yeild');
+    var yields = Listing_Data.pluck('yeild');
     var min = d3.min( yields );
     var max = d3.max( yields );
 
@@ -87,19 +45,19 @@ var bombs = new Listing_Collection(bombs2, { view: this })
         .domain([min, max])
         .range([10, 45]);
 
-    bombs.each(function(val, idx) {
-        bombs.at(idx).set('radius', scale(val.get('yeild')));
+    Listing_Data.each(function(val, idx) {
+        Listing_Data.at(idx).set('radius', scale(val.get('yeild')));
     });
 
    $("#container1").datamap({
         scope: 'world',
-        bubbles: bombs.toJSON(),
+        bubbles: Listing_Data.toJSON(),
         bubble_config: {
             popupTemplate: _.template([
-                '<div class="hoverinfo"><strong><%= data.name %></strong>',
-                '<br/>Payload: <%= data.yeild %> kilotons',
-                '<br/>Country: <%= data.country %>',
-                '<br/>Date: <%= data.date %>',
+                '<div class="hoverinfo"><strong><%= data.title %></strong>',
+                '<br/>Views: <%= data.views %>',
+                '<br/>Favorers: <%= data.favorers %>',
+                '<br/>Listing Id: <%= data.id %>',
                 '</div>'].join(''))
         },
         geography_config: {
