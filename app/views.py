@@ -23,25 +23,29 @@ gn = geocoders.GeoNames()
 def search_etsy_tweets():
     starttime = time.clock()
     api = twitter.Api()
-    searchTerm = "etsy"
-    tweets = api.GetSearch(searchTerm, include_entities=1, result_type="recent", per_page=50, geocode=("39.232253","-2.460937","24000mi"))
+    searchTerm = "etsy.com/listing/"
+    tweets = api.GetSearch(searchTerm, include_entities=1, result_type="recent", per_page=10, geocode=("39.232253","-2.460937","24000mi"))
     return [json_obj for json_obj 
            in (json_listing(tweet,item) for tweet in tweets for item in [url.expanded_url for url in tweet.urls]) 
            if json_obj != None]
     
 def json_listing(tweet, item):
-    expanded_url = get_expanded_url(item.encode('utf-8'))
-    orig_pos = expanded_url.find("http://www.etsy.com/listing/") 
+    item_url = item.encode('utf-8') 
+    if "etsy.me" in item_url:
+        item_url = get_expanded_url(item_url)
+    orig_pos = item_url.find("etsy.com/listing/") 
     if orig_pos != -1:
-        end_pos = expanded_url.find("/",orig_pos + 28)
-        listing_data = get_listing(expanded_url[orig_pos + 28:end_pos]) #Passing Listing_id
+        end_pos = item_url.find("/",orig_pos + 17)
+        listing_data, listing_img_url = get_listing(item_url[orig_pos + 17:end_pos]) #Passing Listing_id
         tweet_location = get_location(tweet)
-        return format_json_data(listing_data[0], tweet_location)
+        return format_json_data(listing_data[0], tweet_location, listing_img_url)
 
       
 def get_listing(listing_id):
     etsy_api = Etsy(api_key=Etsy_API_ID, etsy_env=etsy_env)
-    return etsy_api.getListing(listing_id=listing_id)
+    listing_images = etsy_api.findAllListingImages(listing_id=int(listing_id)) 
+    listing_img_url = listing_images[0]['url_75x75']
+    return etsy_api.getListing(listing_id=listing_id), listing_img_url
 
 def get_location(tweet): 
     tweet_coordinates = ("34.0522342","-118.4911912") #default when no location available
@@ -66,23 +70,15 @@ def get_expanded_url(url):
     except:
         return None
 
-def format_json_data(listing_data, tweet_location):
-    #listing_image = listing_data['listing']
-    '''
-     also need to use
-
-     getImage_Listing api call
-     need to pass listing_id and listing_image_id to get main image.
-     
-     '''
+def format_json_data(listing_data, tweet_location, listing_img_url):
     json_listing = {'id' : listing_data['listing_id'],
-            'title': listing_data['title'][:50] + "...",
+            'title': listing_data['title'],
             'views': listing_data['views'],
             'favorers': listing_data['num_favorers'],
             'latitude' : tweet_location[0],
             'longitude': tweet_location[1],
+            'image_url': listing_img_url
             }
-    
     return json_listing
 
 ### Flask ###

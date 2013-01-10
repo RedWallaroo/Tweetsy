@@ -26,8 +26,9 @@ var Listing_Object = Backbone.Model.extend({
     favorers: null,
     latitude: null,
     longitude: null,
-    yeild: 0,
-    radius: 5.0,
+    image_url: null,
+    yeild: 1,
+    radius: 10,
     fillKey: 'DOT',
     country: null,
     date: null
@@ -41,28 +42,18 @@ var Listing_Collection = Backbone.Collection.extend({
 
 var Listing_Data = new Listing_Collection(json_data, { view: this })
 
-//prep the data
-    var yields = Listing_Data.pluck('yeild');
-    var min = d3.min( yields );
-    var max = d3.max( yields );
-
-    var scale = d3.scale.pow()
-        .domain([min, max])
-        .range([10, 45]);
-
-    Listing_Data.each(function(val, idx) {
-        Listing_Data.at(idx).set('radius', scale(val.get('yeild')));
-    });
-
    $("#container1").datamap({
         scope: 'world',
         bubbles: Listing_Data.toJSON(),
         bubble_config: {
             popupTemplate: _.template([
                 '<div class="hoverinfo"><strong><%= data.title %></strong>',
-                '<br/>Views: <%= data.views %>',
+                '<p><img src= <%= data.image_url %> style="float:left;margin: 0 5px 0 0;">',
+                'Views: <%= data.views %>',
                 '<br/>Favorers: <%= data.favorers %>',
                 '<br/>Listing Id: <%= data.id %>',
+                '<br/>Latitude: <%= data.latitude %>',
+                '<br/>Longitude: <%= data.longitude %><br/></p>',
                 '</div>'].join(''))
         },
         geography_config: {
