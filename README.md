@@ -29,7 +29,7 @@ here along with the GET Search method to pull tweets matching our search criteri
 		tweets = api.GetSearch(searchTerm, include_entities=1, result_type="recent", per_page=10, geocode=("39.232253","-2.460937","24000mi"))
 
 - The 'include-entities' parameter returns items such as the URLS included in the tweets.
-- The 'geocode' parameters returns items containing geolocation data that are within '24000mi' of "39.232253","-2.460937" (arbitraty location)					  	
+- The 'geocode' parameters returns items containing geolocation data that are within '24000mi' of "39.232253","-2.460937" (arbitraty location)
 	   
 ### Etsy API:
 etsy-python (https://github.com/mcfunley/etsy-python) is a Python wrapper around the Etsy API and it is used here
