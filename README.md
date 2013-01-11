@@ -52,9 +52,20 @@ TO DO
 -------
 
 Tweetsy relies on the GET Search Twitter API and as such, it is affected by Twitter's rate limit of 150 requests/hour.
-As well, gathering and processing the Twitter Data in real-time (on page_load) is a very time-consuming process and currently restricts
-the number of data nodes we can display on the Tweetsy map. (This number has been set to 10 to reduce page loading time)
+As well, gathering and processing the Twitter Data on page_load is a very time-consuming process and currently restricts
+the number of data nodes I can display on the Tweetsy map while trying to keep the site fast.
 
 In order to get past these deficiencies, Tweetsy needs to be modified to use the Twitter Streaming API instead. 
 With this, tweet data can be gathered, processed, and stored as an independent process. Then, once Tweetsy's landing page has loaded,
-tweet data can be displayed on the map by firing off Ajax calls to pull data off its storage location.
+tweet data can be displayed on the map by firing off Ajax calls to pull data off its storage location. The ideal behavior 
+would replicate the one of a Twitter timeline.
+
+Other things to fix/improve:
+
+- URLS from Tweets include Shortened versions. There is a cost of 1 request per Tweet in order to expand these.
+- DATAMAPS does not handle collision. Therefore, bubbles with the same exact coordinates are shown in the map one top of one another.
+  This can be fixed by adding something similar to this: http://bl.ocks.org/1748247
+- Tweets with Geocode enabled do not always include the GEO entity. In situations where the Location attribute is the only one
+  available, a request to Geopy needs to be triggered in order to obtain approximate latitude,longitude coordinates. This
+  affects performance as well.
+
