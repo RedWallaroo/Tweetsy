@@ -18,7 +18,6 @@ gn = geocoders.GeoNames()
 
 ### Main ###
 def search_etsy_tweets(tweet_count=5):
-    pdb.set_trace()
     api = twitter.Api()
     searchTerm = "etsy.com/listing/"
     tweets = api.GetSearch(searchTerm, include_entities=1, result_type="recent", per_page=tweet_count, geocode=("39.232253","-2.460937","24000mi"))
