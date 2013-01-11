@@ -7,10 +7,7 @@ import twitter, urllib
 from etsy import Etsy, EtsyEnvSandbox, EtsyEnvProduction
 from geopy import geocoders
 
-
 from app import app
-import pdb
-import time
 
 ### API IDs ####
 Etsy_API_ID = '66dg8mzhdt2e31nfmtpn2rna'
@@ -20,11 +17,11 @@ etsy_env= EtsyEnvProduction()
 gn = geocoders.GeoNames()
 
 ### Main ###
-def search_etsy_tweets():
-    starttime = time.clock()
+def search_etsy_tweets(tweet_count=5):
+    pdb.set_trace()
     api = twitter.Api()
     searchTerm = "etsy.com/listing/"
-    tweets = api.GetSearch(searchTerm, include_entities=1, result_type="recent", per_page=10, geocode=("39.232253","-2.460937","24000mi"))
+    tweets = api.GetSearch(searchTerm, include_entities=1, result_type="recent", per_page=tweet_count, geocode=("39.232253","-2.460937","24000mi"))
     return [json_obj for json_obj 
            in (json_listing(tweet,item) for tweet in tweets for item in [url.expanded_url for url in tweet.urls]) 
            if json_obj != None]
@@ -39,7 +36,6 @@ def json_listing(tweet, item):
         listing_data, listing_img_url = get_listing(item_url[orig_pos + 17:end_pos]) #Passing Listing_id
         tweet_location = get_location(tweet)
         return format_json_data(listing_data[0], tweet_location, listing_img_url)
-
       
 def get_listing(listing_id):
     etsy_api = Etsy(api_key=Etsy_API_ID, etsy_env=etsy_env)
@@ -82,9 +78,11 @@ def format_json_data(listing_data, tweet_location, listing_img_url):
     return json_listing
 
 ### Flask ###
-@app.route('/')
-def display_data():
-    data = search_etsy_tweets()
-    resp = make_response(render_template('index.html', data = data))
-    resp.cache_control.no_cache = True
-    return resp
+@app.route('/', methods = ['GET','POST'])
+def index():
+    if len(request.form.keys()) == 0:
+        return render_template('index.html', data = '')
+    else:
+        tweet_count = int(request.form.keys()[0])
+        data = search_etsy_tweets(tweet_count) 
+        return render_template('index.html', data = data)

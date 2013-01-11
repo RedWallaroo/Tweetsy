@@ -9,7 +9,7 @@
     border-color:#DEDEDE;
     background-color: #ffffff;
     width: 1028px;
-    height: 520px;
+    height: 550px;
     margin:5px auto 0 auto;
    }
 
@@ -23,9 +23,8 @@
     width: 960px;
    }
    div.main_logo{
-    width: 30%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 22%;
+    margin:0 auto 0 auto;
     height: 160px;
    }
 
@@ -70,4 +69,46 @@
     float:left;
     font-family: Arial;
     font-size: 14px;
+}
+
+.submit_link {
+float: right;
+margin-right: 3%;
+padding: 0px 0;
+}
+
+input[type=submit].alt_btn:hover {
+color: #001217;
+}
+
+input[type=submit].alt_btn_5 {
+  background:url(/static/get5.PNG) no-repeat;
+  cursor:pointer;
+  width: 157px;
+  height: 54px;
+  border: none;
+}
+
+input[type=submit].alt_btn_10 {
+  background:url(/static/get10.PNG) no-repeat;
+  cursor:pointer;
+  width: 157px;
+  height: 54px;
+  border: none;
+}
+
+input[type=submit].alt_btn_25 {
+  background:url(/static/get25.PNG) no-repeat;
+  cursor:pointer;
+  width: 157px;
+  height: 54px;
+  border: none;
+}
+
+input[type=submit].alt_btn_50 {
+  background:url(/static/get50.PNG) no-repeat;
+  cursor:pointer;
+  width: 157px;
+  height: 54px;
+  border: none;
 }

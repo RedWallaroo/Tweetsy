@@ -1,47 +1,50 @@
 <html>
  <head>
+   <script src="../static/jquery-1.5.2.min.js"></script>
    <script src="../static/d3.v3.min.js"></script>
    <script src="../static/underscore-min.js"></script>
    <script src="../static/backbone-min.js"></script>
-   <link rel="stylesheet" type="text/css" href="../static/style.css"> 
+   <link rel="stylesheet" type="text/css" href="../static/style.css">
+
   </head>
  <body class = "body">
   <div id ="main_logo" class = "main_logo">
     <img class = "logo" src="../static/tweetsy_logo_v7.png">
   </div>
   <div id="maincontainer" class = "main_container">
-  <div id="container1" class = "canvas"></div></div>
-    <!-- Datamaps Source -->
+  <div id="container1" class = "canvas"></div>
+  <!-- Datamaps Source -->
     <script src="../static/datamaps-all.js"></script>
     <script type="text/javascript">
 
+    
     json_data = {{ data|tojson|safe }}
+    
+    var Listing_Object = Backbone.Model.extend({
+       defaults: {
+         id: null,
+         title: null,
+         views: null,
+         favorers: null,
+         latitude: null,
+         longitude: null,
+         image_url: null,
+         yeild: 1,
+         radius: 10,
+         fillKey: 'DOT',
+         country: null,
+         date: null
+      }
+    });
 
-var Listing_Object = Backbone.Model.extend({
-  defaults: {
-    id: null,
-    title: null,
-    views: null,
-    favorers: null,
-    latitude: null,
-    longitude: null,
-    image_url: null,
-    yeild: 1,
-    radius: 10,
-    fillKey: 'DOT',
-    country: null,
-    date: null
-  }
-});
+    var Listing_Collection = Backbone.Collection.extend({
+       model: Listing_Object,
+       initialize: function (models,options){}
+    });
 
-var Listing_Collection = Backbone.Collection.extend({
-  model: Listing_Object,
-  initialize: function (models,options){}
-});
+    var Listing_Data = new Listing_Collection(json_data, { view: this })
 
-var Listing_Data = new Listing_Collection(json_data, { view: this })
-
-   $("#container1").datamap({
+    $("#container1").datamap({
         scope: 'world',
         bubbles: Listing_Data.toJSON(),
         bubble_config: {
@@ -64,29 +67,36 @@ var Listing_Data = new Listing_Collection(json_data, { view: this })
             defaultFill: '#969496'
         },
     });
-
-   </script>
-   {{ data.listing_id }}
-<br style="clear:both" />
-   <div id="content">
+    </script>
+  <div class="submit_link">
+    <form name="form_1" id="form_1" action="/" method="POST">
+          <input type="submit" name="5" id="5_tweets" value="" class="alt_btn_5">
+          <input type="submit" name="10"id="10_tweets" value="" class="alt_btn_10">
+          <input type="submit" name="25" id="25_tweets" value="" class="alt_btn_25">
+          <input type="submit" name="50" id="50_tweets" value="" class="alt_btn_50">
+    </form>
+  </div></div>
+  <br style="clear:both" />
+  <div id="content">
                  <div id="sub-content">
                  <div id="column1">
                  <h2>About Tweetsy</h2>
-                   <p>In a few words, Tweetsy uses the Twitter API to
-                    grab a sample of tweets matching the search term 'Etsy'.
-                    The search also includes a parameter to only search
-                    for tweets with geolocation data.</p>
+                   <p>Tweetsy is a data visualization app. It uses the Twitter API to
+                    grab a sample of tweets mentioning Etsy listings in them.
+                    </p>
 
-                    <p>It then filters the sampled data and keeps only tweets 
-                    that contain a url linking to an Etsy listing
-                    (or product). With this information, it places a call
-                    to the Etsy API and grabs the listing's information.</p> 
+                    <p>It then places a call to the Etsy API to obtain the listing's data.
+                      This includes: views, number of favores, listing title, and 
+                      the listing's image urls.</p> 
                     
                     <p>Once all the information has been gathered, it uses
                       the tweet's geolocation data and D3.js to locate the 
                       tweet's source and listing's data on the map above.</p>
                  </div>
                  <div id="column2">
+                 <h2>Usage</h2>
+                   <p>Click on one of the options above to request and process
+                   a given number of tweets.</p>
                  <h2>Libraries</h2>
                    <p>Tweetsy uses the following libraries:</p>
                    <li><a href="https://github.com/mbostock/d3"> D3.js </a></li>
