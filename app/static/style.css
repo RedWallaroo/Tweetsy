@@ -82,7 +82,7 @@ color: #001217;
 }
 
 input[type=submit].alt_btn_5 {
-  background:url(/static/get5.PNG) no-repeat;
+  background:url(../static/get5.PNG) no-repeat;
   cursor:pointer;
   width: 157px;
   height: 54px;
@@ -90,7 +90,7 @@ input[type=submit].alt_btn_5 {
 }
 
 input[type=submit].alt_btn_10 {
-  background:url(/static/get10.PNG) no-repeat;
+  background:url(../static/get10.PNG) no-repeat;
   cursor:pointer;
   width: 157px;
   height: 54px;
@@ -98,7 +98,7 @@ input[type=submit].alt_btn_10 {
 }
 
 input[type=submit].alt_btn_25 {
-  background:url(/static/get25.PNG) no-repeat;
+  background:url(../static/get25.PNG) no-repeat;
   cursor:pointer;
   width: 157px;
   height: 54px;
@@ -106,7 +106,7 @@ input[type=submit].alt_btn_25 {
 }
 
 input[type=submit].alt_btn_50 {
-  background:url(/static/get50.PNG) no-repeat;
+  background:url(../static/get50.PNG) no-repeat;
   cursor:pointer;
   width: 157px;
   height: 54px;
