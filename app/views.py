@@ -3,7 +3,7 @@ import os, sys
 from flask import *
 from httplib import *
 
-import twitter, urllib
+import twitter, urllib, random
 from etsy import Etsy, EtsyEnvSandbox, EtsyEnvProduction
 from geopy import geocoders
 
@@ -42,8 +42,7 @@ def get_listing(listing_id):
     listing_img_url = listing_images[0]['url_75x75']
     return etsy_api.getListing(listing_id=listing_id), listing_img_url
 
-def get_location(tweet): 
-    tweet_coordinates = ("34.0522342","-118.4911912") #default when no location available
+def get_location(tweet):
     if tweet.location != None and tweet.location != '':
         if tweet.location.find("iPhone") != -1:
             tweet_coordinates = tweet.location.replace("iPhone: ", "")  
@@ -54,9 +53,23 @@ def get_location(tweet):
                 tweet_geocode = None
             if tweet_geocode != None: 
                 tweet_coordinates = tweet_geocode[0][1]
-    if tweet.geo != None and tweet.geo != '':
+            else:
+                tweet_coordinates = get_random_coordinates()
+    elif tweet.geo != None and tweet.geo != '':
         tweet_coordinates = tweet.geo.coordinates
+    else:
+        tweet_coordinates = get_random_coordinates()
     return tweet_coordinates
+
+def get_random_coordinates():
+    ''' Generates random coordinates for tweets
+        where geo location data could not be
+        resolved to lat, lon coordinates - temp fix'''
+    lat_from, lat_to = -15, -45
+    lon_from, lon_to = -100, -150
+    latitude = (random.random() * (lat_to - lat_from) + lat_from) * 1
+    longitude = (random.random() * (lon_to - lon_from) + lon_from) * 1
+    return "%.3f" % latitude, "%.3f" % longitude
 
 def get_expanded_url(url):
     try:
